@@ -6,5 +6,8 @@
   "releaseTag": "v1.0.5",
   "apkAsset": "WORK_SAFE_NOTE.apk",
   "downloadUrl": "https://github.com/lovebank198307291-hue/jun2026/releases/latest/download/WORK_SAFE_NOTE.apk",
-  "releaseApi": "https://api.github.com/repos/lovebank198307291-hue/jun2026/releases/latest"
+  "releaseApi": "https://api.github.com/repos/lovebank198307291-hue/jun2026/releases/latest",
+  "apkSha256": "7dab299538bb97a4e580e754a2b0375e619ac8412171dc70f112723490f57d15",
+  "apkSizeBytes": 16084004,
+  "releaseStatus": "awaiting_apk_attachment"
 }
