@@ -1,0 +1,30 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'com.worksafenote.app'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'com.safetyladder.app'
+        minSdk 24
+        targetSdk 28
+        versionCode 6
+        versionName "1.0.5"
+    }
+    signingConfigs {
+        release {
+            def keyFile = System.getenv('WSN_STORE_FILE')
+            if (keyFile && System.getenv('WSN_STORE_PASSWORD') && System.getenv('WSN_KEY_ALIAS') && System.getenv('WSN_KEY_PASSWORD')) {
+                storeFile file(keyFile)
+                storePassword System.getenv('WSN_STORE_PASSWORD')
+                keyAlias System.getenv('WSN_KEY_ALIAS')
+                keyPassword System.getenv('WSN_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
