@@ -1,0 +1,10 @@
+{
+  "appName": "WORK SAFE NOTE",
+  "versionName": "1.0.5",
+  "versionCode": 6,
+  "packageName": "com.safetyladder.app",
+  "releaseTag": "v1.0.5",
+  "apkAsset": "WORK_SAFE_NOTE.apk",
+  "downloadUrl": "https://github.com/lovebank198307291-hue/jun2026/releases/latest/download/WORK_SAFE_NOTE.apk",
+  "releaseApi": "https://api.github.com/repos/lovebank198307291-hue/jun2026/releases/latest"
+}
