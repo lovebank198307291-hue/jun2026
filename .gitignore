@@ -1,0 +1,11 @@
+*.jks
+*.keystore
+*.p12
+*.pem
+local.properties
+.gradle/
+.idea/
+app/build/
+build/
+*.apk
+.private/
