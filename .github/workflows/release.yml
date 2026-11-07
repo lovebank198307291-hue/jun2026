@@ -1,0 +1,57 @@
+name: Build and publish signed APK
+on:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install Android 35
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Check signing secrets
+        env:
+          WSN_KEYSTORE_BASE64: ${{ secrets.WSN_KEYSTORE_BASE64 }}
+          WSN_STORE_PASSWORD: ${{ secrets.WSN_STORE_PASSWORD }}
+          WSN_KEY_ALIAS: ${{ secrets.WSN_KEY_ALIAS }}
+          WSN_KEY_PASSWORD: ${{ secrets.WSN_KEY_PASSWORD }}
+        run: |
+          test -n "$WSN_KEYSTORE_BASE64" && test -n "$WSN_STORE_PASSWORD" && test -n "$WSN_KEY_ALIAS" && test -n "$WSN_KEY_PASSWORD" || { echo 'Missing signing secrets; see README.md'; exit 1; }
+          printf '%s' "$WSN_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/wsn-release.jks"
+          echo "WSN_STORE_FILE=$RUNNER_TEMP/wsn-release.jks" >> "$GITHUB_ENV"
+      - name: Build signed APK
+        env:
+          WSN_STORE_PASSWORD: ${{ secrets.WSN_STORE_PASSWORD }}
+          WSN_KEY_ALIAS: ${{ secrets.WSN_KEY_ALIAS }}
+          WSN_KEY_PASSWORD: ${{ secrets.WSN_KEY_PASSWORD }}
+        run: gradle --no-daemon :app:assembleRelease
+      - name: Verify signature
+        run: |
+          APK=app/build/outputs/apk/release/app-release.apk
+          test -f "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+      - name: Publish Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ASSET="app/build/outputs/apk/release/app-release.apk#WORK_SAFE_NOTE.apk"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$ASSET" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$ASSET" --title "WORK SAFE NOTE $GITHUB_REF_NAME" --generate-notes --latest
+          fi
